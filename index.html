@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إدارة الوثائق الذكي - العرض الكامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #1e40af; --secondary: #059669; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; padding-bottom: 70px; margin: 0; }
+        
+        .wide-container { width: 100%; max-width: 100% !important; padding: 10px; }
+
+        .table-wrapper { background: white; border-radius: 12px; overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: var(--primary); color: white; padding: 12px; font-size: 13px; text-align: center; white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; text-align: center; vertical-align: middle; }
+        
+        .sticky-col { position: sticky; right: 0; background: white; z-index: 10; border-left: 1px solid #e2e8f0; }
+        
+        /* ألوان التنبيه الذكية */
+        .status-expired { color: #dc2626 !important; font-weight: 900; } /* أحمر - منتهي */
+        .status-warning { color: #d97706 !important; font-weight: 800; } /* أصفر/برتقالي - قريب */
+        .status-safe { color: #000000 !important; font-weight: 600; }    /* أسود - آمن */
+
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #64748b; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #splash-screen { background: radial-gradient(circle at center, #1e40af, #1e3a8a); z-index: 1000; transition: 0.6s; }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen" class="fixed inset-0 flex flex-col justify-center items-center text-white">
+    <div class="relative w-24 h-24 mb-6">
+        <div class="absolute inset-0 border-4 border-white/20 rounded-full animate-ping"></div>
+        <img src="https://nour2030.neocities.org/DMS/Dorra.png" class="relative w-full h-full object-contain" alt="Logo">
+    </div>
+    <h1 class="text-3xl font-black mb-2 tracking-tight">نظام إدارة الوثائق والمستندات </h1>
+    <div class="flex items-center gap-2 text-blue-200">
+        <i class="fas fa-sync fa-spin text-xs"></i>
+        <span class="text-sm font-bold uppercase tracking-widest">Version 2.0 - 2025</span>
+    </div>
+</div>
+
+<div id="app-content" class="invisible">
+    <div id="home-screen" class="screen active wide-container">
+        <header class="flex justify-between items-center mb-6 px-2 pt-4">
+            <div>
+                <h2 class="text-2xl font-black text-slate-800">مرحبا بك في ادارة حفظ الوثائق والمستندات،</h2>
+                <p class="text-slate-500 text-sm">إحصائيات النظام اليوم <span id="current-date" class="font-bold text-blue-600"></span></p>
+            </div>
+            <img src="https://nour2030.neocities.org/DMS/Dorra.png" class="w-14 h-14" alt="Logo">
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-r-8 border-blue-500" onclick="openTab('loaned')">
+                <h3 class="text-slate-400 font-bold mb-1">المستندات المستعارة</h3>
+                <div class="text-4xl font-black text-blue-600" id="count-loaned">0</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-r-8 border-emerald-500" onclick="openTab('renewal')">
+                <h3 class="text-slate-400 font-bold mb-1">تجديدات بانتظار المتابعة</h3>
+                <div class="text-4xl font-black text-emerald-600" id="count-renewal">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loaned-screen" class="screen wide-container">
+        <h2 class="text-xl font-black mb-4 px-2 text-slate-800"><i class="fas fa-exchange-alt ml-2"></i>سجل الملفات المستعارة</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sticky-col">اسم الشركة</th>
+                        <th>اسم الملف المستعار</th>
+                        <th>تاريخ الاستلام</th>
+                        <th>اسم المستلم</th>
+                        <th>واتساب</th>
+                    </tr>
+                </thead>
+                <tbody id="body-loaned"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="renewal-screen" class="screen wide-container">
+        <h2 class="text-xl font-black mb-4 px-2 text-slate-800"><i class="fas fa-calendar-check ml-2"></i>جدول التجديدات القادمة</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sticky-col">اسم الشركة</th>
+                        <th>نوع الملف</th>
+                        <th>تاريخ الانتهاء</th>
+                        <th>المسؤول</th>
+                        <th>ملحوظات</th>
+                        <th>واتساب</th>
+                    </tr>
+                </thead>
+                <tbody id="body-renewal"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md p-3 flex justify-around border-t shadow-2xl z-50">
+        <div onclick="openTab('home')" id="nav-home" class="nav-item active"><i class="fas fa-home text-xl"></i><span class="text-[10px] font-bold mt-1">الرئيسية</span></div>
+        <div onclick="openTab('loaned')" id="nav-loaned" class="nav-item"><i class="fas fa-folder-open text-xl"></i><span class="text-[10px] font-bold mt-1">الملفات المستعارة</span></div>
+        <div onclick="openTab('renewal')" id="nav-renewal" class="nav-item"><i class="fas fa-clock text-xl"></i><span class="text-[10px] font-bold mt-1">التجديدات</span></div>
+    </nav>
+</div>
+
+<script>
+    // بيانات الملفات المستعارة
+    const loanedData = [
+        { company: "ريجوا", file: "اصل عقد بيع الابتدائي 179 فدان", loanDate: "2021-5-26", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
+        { company: "ريجوا", file: "أصل توكيل 40 فدان", loanDate: "2023-12-23", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
+        { company: "ريجوا", file: "اصل عقد 40 فدان", loanDate: "2023-12-23", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
+        { company: "مينس", file: "عقد swell lake", loanDate: "2025-9-22", borrower: "أ.احمد فكري", phone: "201029275571" },
+        { company: "فولاذ للامن والحراسة", file: "بطاقه القيمه المضافة", loanDate: "2025-11-22", borrower: "أ.عبد الناصر عزوز", phone: "201019442424" },
+        { company: "مينس", file: "بطاقه الضريبه", loanDate: "2025-9-22", borrower: "أ.احمد فكري", phone: "201029275571" },
+        { company: "جرينز", file: "رخصه فيلا 2004", loanDate: "2025-11-22", borrower: "أ. حماده ممدوح", phone: "201003430801" }
+    ];
+
+    // بيانات التجديدات الشاملة 
+    const renewalData = [
+  { company: "فولاذ لخدمات الامن والحراسه", type: "شهادة القيمه المضافة لشركه فولاذ لخدمات الامن والحراسه", expiryDate: "2025-10-19", manager: "أ- عبد الناصر", phone: "201019442424", notes: "تم تسليمه اصل الرخصه" },
+  { company: "Dorra V1", type: "شهادة شغل وظيفه - Dorra V1 Limited dated", expiryDate: "2025-12-04", manager: "أ.فاطيمة", phone: "201222221637", notes: "تم ارسال ميل 12-9-2025" },
+  { company: "بناء مصر", type: "وثيقه تامين سياره ص أ 6659 متسوبيشي لانسر", expiryDate: "2025-12-13", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "تجديد وثيقة تأمين سيارات تكميلى خصوصى نيسان صني ن.ن 2293 رقم MOTP010229522A", expiryDate: "2025-12-14", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "تجديد وثيقة تأمين سيارات تكميلى خصوصى نيسان صني ف-ط5689", expiryDate: "2025-12-24", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "فولاذ لخدمات الامن والحراسه", type: "رخصه شركه حراسه منشات- نقل الاموال", expiryDate: "2025-12-31", manager: "أ.عمرو صلاح -المقدم.عمرو حسن", phone: "201023883232", notes: "تم تسليمه اصل الرخصه" },
+  { company: "ملفات خاصه م عمر درة", type: "ايصال تجديد موقت لرخصه السلاح ينتهي في 1-10-2023 والرخصه مجددة", expiryDate: "2025-12-31", manager: "أ.عمرو صلاح -المقدم.عمرو حسن", phone: "201023883232", notes: "" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "تراخيص المصنفات الفنية - عدد 12", expiryDate: "2026-01-16", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "The Atrium", type: "تراخيص المصنفات الفنية - عدد 5", expiryDate: "2026-01-16", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "The Courtyard", type: "تراخيص المصنفات الفنية - عدد 9", expiryDate: "2026-01-16", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "ترخيص باستخدام الموسيقي و الغناء لكابيتال بيزنس", expiryDate: "2026-01-16", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "ريتيل للاستثمارات العقارية", type: "وثيقه سياره نيسان س ك 4845", expiryDate: "2026-01-20", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "تصريح عمل للمحاجر - لاند مارك ينتهي في 28-1-2026", expiryDate: "2026-01-28", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "تصريح مؤقت لعمل كرفان 2025", expiryDate: "2026-01-29", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" },
+  { company: "ميدان فيلدج", type: "عقد ميدان فيلدج ينتهي في 31-1-2026", expiryDate: "2026-01-31", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "ميدان كابيتال", type: "عقد ميدان كابيال ينتهي في 31-1-2026", expiryDate: "2026-01-31", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "ميدان دره", type: "عقد ميدان دره ينتهي في 31-1-2026", expiryDate: "2026-01-31", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "The Atrium", type: "موافقة الدفاع المدنى (أمن الحريق) على السير فى إجراءات الترخيص والتشغيل لمدة عام", expiryDate: "2026-02-16", manager: "أ.عمرو صلاح -المقدم.عمرو حسن", phone: "201023883232", notes: "" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "موافقة الدفاع المدنى على تشغيل جميع المبانى بالمرحلة الأولى والثانية لمدة عام", expiryDate: "2026-02-16", manager: "أ.عمرو صلاح -المقدم.عمرو حسن", phone: "201023883232", notes: "" },
+  { company: "The Courtyard", type: "موافقة الدفاع المدنى قسم الحريق على التشغيل والسير فى إجراءات الترخيص لمدة عام", expiryDate: "2026-02-16", manager: "أ.عمرو صلاح -المقدم.عمرو حسن", phone: "201023883232", notes: "" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "مطالبه الاعلان 20 علم - الفانوس واعلي- القسط الرابع", expiryDate: "2026-03-01", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "دره ديفيلوبمنت اوفرسيس ليمتد", type: "شهاده شغل وظيفه تم اصدار الشهاده في 7-10-2025 صالحه لمده 6 اشهر", expiryDate: "2026-03-06", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "شركه درة للاستثمار والتنميه العقارية", type: "وثيقة تامين رقم ل ق 4966 نيسان صني", expiryDate: "2026-03-11", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "قسط العقد النصف سنوي القيمه 119,433,621", expiryDate: "2026-03-25", manager: "أ. محمد عبد المنعم", phone: "", notes: "" },
+  { company: "الشركه العربيه للاداره والخدمات", type: "وثيقه تامين علي المصاعد 001388823 والسلالم لمباني كابيتال", expiryDate: "2026-03-30", manager: "أ. محمد رفعت", phone: "", notes: "" },
+  { company: "متادور انترناشونال للاستثمارات (دبي)", type: "شهادة تسجيل العضويه", expiryDate: "2026-04-09", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "متادور انترناشونال للاستثمارات (دبي)", type: "شهادة قيد السجل التجاري", expiryDate: "2026-04-09", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "متادور انترناشونال للاستثمارات (دبي)", type: "رخصه تجارية", expiryDate: "2026-04-09", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "شخصي", type: "الاقامه دبي للمهندس عمر", expiryDate: "2026-05-13", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "ريتيل للاستثمارات العقارية", type: "قطاع خاص نيسان صيني 2024 وثيقه تامين تكميلي ص ص ق 9624", expiryDate: "2026-05-29", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "الاعلانات اعلي المبني - 20 علم - 12 فانون", type: "عقد الاعلانات والفانوس والاعلام", expiryDate: "2026-05-31", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "الشركه العربيه للاداره والخدمات", type: "بطاقه قيد في سجل الوسطاء العقاريين شركه العربيه للاداره والخدمات", expiryDate: "2026-06-06", manager: "أ- عبد الناصر", phone: "201019442424", notes: "" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "وثيقه تامين سياره ( خديجه ) دف 7668 رقم 7631223", expiryDate: "2026-06-08", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "شركات متنوعه - ملف التامينات", type: "عقد تقديم خدمات التوقيع الالكتروني نظام التوكين", expiryDate: "2026-06-08", manager: "أ. اماني جودة", phone: "201066692315", notes: "" },
+  { company: "فيلدج ويست زايد", type: "وثيقه ثروه كل دا في وثيقه واحده ( اول صفحه مذكره داخليه )", expiryDate: "2026-06-10", manager: "أ. ممدوح - محمد عبد المنعم", phone: "201001033707", notes: "CRC" },
+  { company: "Atrium- Capital B.Park", type: "شهاده سريان ترخيص مزاوله نشاط توزيع طاقه كهربائية ( مشروع كابيتال - مول اتريم )", expiryDate: "2026-06-30", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "The Address", type: "شهادة سريان ترخيص مزاولة نشاط توزيع طاقة كهربائية ( ادريس )", expiryDate: "2026-06-30", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "سيارة هيونداي النترا 2019 (ل ط 3531 ) وثيقة تامين تكميلي سيارات", expiryDate: "2026-07-01", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "اراضي مصر للاستصلاح الزراعي", type: "رخصه بئر جوفي للقطعه الارض 40 فدان ينتهي في 29-7-2025", expiryDate: "2026-07-29", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "اراضي مصر للاستصلاح الزراعي", type: "عقد ايجار بين الشركه العربيه للتنميه وشركه اراضي مصر", expiryDate: "2026-07-31", manager: "أ- عبد الناصر", phone: "201019442424", notes: "" },
+  { company: "المدرسه الامريكيه الدوليه", type: "عقد المدرسه الامريكيه ينتهي في 31 يوليو 2027 ولكن يجب الاخطار في 31-7-2026", expiryDate: "2026-07-31", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "Dorra Dev. Overseas", type: "شهادة شغل وظيفه - Dorra DEV.Overseas", expiryDate: "2026-08-05", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "فيلدج ويست زايد", type: "وثيقه ثروه كل دا في وثيقه واحده ( اول صفحه مذكره داخليه )", expiryDate: "2026-08-11", manager: "أ. ممدوح - محمد عبد المنعم", phone: "201001033707", notes: "CRC" },
+  { company: "ريتيل للاستثمارات العقارية", type: "وثيقه تامين سياره شيفرولية اوبترا 2026 (ن ك 2636 )", expiryDate: "2026-08-21", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "متادور للاستثمار والتنميه التجاريه", type: "قطاع خاص سياره ص ك 9474 تويوتا فورتشنر2025", expiryDate: "2026-08-27", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "سياره نيسان صني2024 رقم المحرك 794284- ك ج 7293", expiryDate: "2026-09-14", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "سياره نيسان صني2024 رقم المحرك 765520- ك ج 7294", expiryDate: "2026-09-14", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "سياره نيسان صني2024 رقم المحرك 767597- ك ج 7295", expiryDate: "2026-09-14", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "شركه القاهره الجديده للتنميه والاسكان", type: "سيارة نيسان صاني 2022 أ ط 9479 ( خصوصي)", expiryDate: "2026-09-18", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "قسط العقد النصف سنوي القيمه 119,433,621", expiryDate: "2026-09-25", manager: "أ. محمد عبد المنعم", phone: "", notes: "" },
+  { company: "فيلدج ويست زايد", type: "وثيقه ثروه كل دا في وثيقه واحده ( اول صفحه مذكرة داخلية )", expiryDate: "2026-09-30", manager: "أ. ممدوح - محمد عبد المنعم", phone: "201001033707", notes: "" },
+  { company: "فيلدج ويست زايد", type: "وثيقه ثروه كل دا في وثيقه واحده اول صفحه خطاب من CRC", expiryDate: "2026-09-30", manager: "أ. ممدوح - محمد عبد المنعم", phone: "201001033707", notes: "" },
+  { company: "ريتيل للاستثمارات العقارية", type: "وثيقه تامين سياره نيسان (ن و 4427)", expiryDate: "2026-10-17", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "سيارة شيفروليه - وثيقة تامين تكميلي سيارات ج ص 9768 ( خصوصي)", expiryDate: "2026-10-20", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "اراضي مصر للاستصلاح الزراعي", type: "رخصه بئر جوفي 134 فدان", expiryDate: "2026-11-08", manager: "أ.حمادة ممدوح", phone: "201003430801", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "تجديد وثيقة تأمين 5 سيارات تكميلى خصوصى رقم نيسان صني 2022- MOTP004062124A", expiryDate: "2026-11-17", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "قسط العقد النصف سنوي القيمه 119,433,621", expiryDate: "2027-03-25", manager: "أ. محمد عبد المنعم", phone: "", notes: "" },
+  { company: "جامعه Eslasca", type: "عقد ايجار هيبدا في 1-7-2027", expiryDate: "2027-07-01", manager: "أ.هيثم نور", phone: "201224268026", notes: "" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "خطاب خاص بمده التنفيذ المشروع فيليدج ويست", expiryDate: "2027-07-06", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "وثيقه تامين اسطبل -- استراحه تعديل مبني قائم", expiryDate: "2028-01-12", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "تم عملها لاستصدار الرخصه" },
+  { company: "نيو جيزه شقه A334", type: "عقد ايجار مختوم من القسم وحده سكنيه نيو جيزه تبداء في 1-12-2025 وتنتهي في 30-11-2028", expiryDate: "2028-11-30", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "الشركه العربيه للاداره والخدمات", type: "عقد الاداره بين العربيه والخدمات وبين شركه سيكيور باركنج مصر", expiryDate: "2029-04-19", manager: "أ.فاطيمة", phone: "201222221637", notes: "" },
+  { company: "الشركه العربيه للاداره والخدمات", type: "ملحق عقد الاتفاق بخصوص تنظيف الصيانة والترميم الاسطح", expiryDate: "2029-12-31", manager: "أ. فاطمه", phone: "", notes: "ملف الشركات المتنوعه" },
+  { company: "الشركه العربيه للاداره والخدمات", type: "شهاده القيمه المضافه للشركه العربيه للاداره والخدمات", expiryDate: "2030-10-15", manager: "أ- عبد الناصر", phone: "201019442424", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "خطاب المهله المتاحه للشركه لاستكمال المشروع كود الملف 38687", expiryDate: "2031-12-04", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" },
+  { company: "لاند مارك للاستثمار", type: "عقد استشارات ( سلطان للاستشارات )- ملف سفنكس", expiryDate: "2035-09-30", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "عقد اداره الوحدات التجاريه بمشروع كابيتال الوحدات التجاريه - ايجبت ماث للاستثمار العقاري", expiryDate: "2036-10-31", manager: "أ. فاطمه", phone: "", notes: "موجود في الملفات المتنوعه" },
+  { company: "درة للإستثمار والتنمية العقارية", type: "عقد انتفاع بالبنيه الاساسية وتقديم خدمات الاتصالات -فودافون مصر مشروع فيليدج", expiryDate: "2037-07-29", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" }
+];
+  
+    // وظيفة حساب حالة التاريخ واللون
+    function getStatusClass(dateStr) {
+        if (!dateStr) return "status-safe";
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const expiry = new Date(dateStr);
+        const diffTime = expiry - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) {
+            return "status-expired"; // أحمر
+        } else if (diffDays <= 15) {
+            return "status-warning"; // أصفر
+        } else {
+            return "status-safe";    // أسود
+        }
+    }
+
+    function openTab(name) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(name + '-screen').classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('nav-' + name).classList.add('active');
+    }
+
+    function renderTables() {
+        const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-EG', dateOptions);
+
+        document.getElementById('count-loaned').innerText = loanedData.length;
+        document.getElementById('count-renewal').innerText = renewalData.length;
+
+        // رندر العهدة
+        document.getElementById('body-loaned').innerHTML = loanedData.map(item => `
+            <tr>
+                <td class="sticky-col font-bold text-slate-800">${item.company}</td>
+                <td class="whitespace-normal min-w-[250px]">${item.file}</td>
+                <td class="text-blue-600 font-bold">${item.loanDate}</td>
+                <td>${item.borrower}</td>
+                <td><a href="https://wa.me/${item.phone}" target="_blank" class="text-green-500"><i class="fab fa-whatsapp text-lg"></i></a></td>
+            </tr>`).join('');
+
+        // رندر التجديدات مع تطبيق منطق الألوان
+        document.getElementById('body-renewal').innerHTML = renewalData.map(item => {
+            const colorClass = getStatusClass(item.expiryDate);
+            return `
+            <tr>
+                <td class="sticky-col font-bold text-slate-800">${item.company}</td>
+                <td class="whitespace-normal min-w-[250px] text-right">${item.type}</td>
+                <td class="${colorClass}">${item.expiryDate}</td>
+                <td>${item.manager}</td>
+                <td class="text-slate-500 italic text-[11px] min-w-[120px]">${item.notes || '-'}</td>
+                <td><a href="https://wa.me/${item.phone}" target="_blank" class="text-green-500"><i class="fab fa-whatsapp text-lg"></i></a></td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.onload = () => {
+        renderTables();
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+                document.getElementById('app-content').classList.remove('invisible');
+            }, 600);
+        }, 2000);
+    };
+</script>
+</body>
+</html>
