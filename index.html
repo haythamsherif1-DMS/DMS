@@ -8,10 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #1e40af; --secondary: #10b981; --danger: #ef4444; --warning: #f59e0b; }
-        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        :root { --primary: #1e40af; --secondary: #10b981; --danger: #ef4444; --warning: #f59e0b; --info: #8b5cf6; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
         
-        /* تأثيرات الأبليكيشن */
         .app-card { background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3); }
         .app-card:active { transform: scale(0.98); }
         
@@ -23,10 +22,9 @@
         .bg-warning { background-color: #fef3c7; color: var(--warning); }
         .bg-safe { background-color: #d1fae5; color: var(--secondary); }
 
-        /* الهيدر الثابت */
         .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 40; border-bottom: 1px solid #e2e8f0; }
 
-        .nav-item { position: relative; color: #94a3b8; transition: 0.3s; }
+        .nav-item { position: relative; color: #94a3b8; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         .nav-item.active::after { content: ''; position: absolute; top: -12px; width: 20px; height: 4px; background: var(--primary); border-radius: 0 0 10px 10px; }
 
@@ -34,8 +32,6 @@
         .screen.active { display: block; animation: slideUp 0.4s ease-out; }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* إخفاء السكرول بار */
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -66,54 +62,66 @@
     </header>
 
     <div id="home-screen" class="screen active">
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="app-card p-5 border-r-4 border-blue-600 bg-gradient-to-br from-white to-blue-50" onclick="openTab('loaned')">
-                <i class="fas fa-folder-open text-blue-600 mb-2 text-xl"></i>
-                <h3 class="text-xs font-bold text-slate-500">المستعارة</h3>
-                <div class="text-2xl font-black text-slate-800" id="count-loaned">0</div>
+        <div class="grid grid-cols-3 gap-2 mb-6">
+            <div class="app-card p-3 border-r-4 border-blue-600 bg-gradient-to-br from-white to-blue-50" onclick="openTab('loaned')">
+                <i class="fas fa-folder-open text-blue-600 mb-2 text-lg"></i>
+                <h3 class="text-[10px] font-bold text-slate-500">المستعارة</h3>
+                <div class="text-xl font-black text-slate-800" id="count-loaned">0</div>
             </div>
-            <div class="app-card p-5 border-r-4 border-emerald-600 bg-gradient-to-br from-white to-emerald-50" onclick="openTab('renewal')">
-                <i class="fas fa-clock text-emerald-600 mb-2 text-xl"></i>
-                <h3 class="text-xs font-bold text-slate-500">تجديدات</h3>
-                <div class="text-2xl font-black text-slate-800" id="count-renewal">0</div>
+            <div class="app-card p-3 border-r-4 border-emerald-600 bg-gradient-to-br from-white to-emerald-50" onclick="openTab('renewal')">
+                <i class="fas fa-clock text-emerald-600 mb-2 text-lg"></i>
+                <h3 class="text-[10px] font-bold text-slate-500">تجديدات</h3>
+                <div class="text-xl font-black text-slate-800" id="count-renewal">0</div>
+            </div>
+            <div class="app-card p-3 border-r-4 border-purple-600 bg-gradient-to-br from-white to-purple-50" onclick="openTab('realestate')">
+                <i class="fas fa-house-chimney text-purple-600 mb-2 text-lg"></i>
+                <h3 class="text-[10px] font-bold text-slate-500">تمويل عقاري</h3>
+                <div class="text-xl font-black text-slate-800" id="count-realestate">0</div>
             </div>
         </div>
 
         <h3 class="font-black text-slate-800 mb-4 flex items-center"><i class="fas fa-chart-line ml-2 text-blue-600"></i> وصول سريع</h3>
-        <div class="space-y-3" id="quick-access">
-            </div>
+        <div class="space-y-3" id="quick-access"></div>
     </div>
 
     <div id="loaned-screen" class="screen">
-        <h2 class="text-lg font-black mb-4 text-slate-800 uppercase tracking-wide">قائمة العهدة الحالية</h2>
+        <h2 class="text-lg font-black mb-4 text-slate-800">قائمة العهدة (الأحدث أولاً)</h2>
         <div id="body-loaned" class="space-y-4"></div>
     </div>
 
     <div id="renewal-screen" class="screen">
-        <h2 class="text-lg font-black mb-4 text-slate-800 uppercase tracking-wide">جدول المتابعة الزمني</h2>
+        <h2 class="text-lg font-black mb-4 text-slate-800">جدول المتابعة (الأقدم أولاً)</h2>
         <div id="body-renewal" class="space-y-4"></div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-50">
+    <div id="realestate-screen" class="screen">
+        <h2 class="text-lg font-black mb-4 text-slate-800">التمويل العقاري</h2>
+        <div id="body-realestate" class="space-y-4"></div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex justify-between items-center shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-50">
         <div onclick="openTab('home')" id="nav-home" class="nav-item active flex flex-col items-center">
-            <i class="fas fa-th-large text-xl"></i>
-            <span class="text-[10px] font-bold mt-1">الرئيسية</span>
+            <i class="fas fa-th-large text-lg"></i>
+            <span class="text-[9px] font-bold mt-1">الرئيسية</span>
         </div>
         <div onclick="openTab('loaned')" id="nav-loaned" class="nav-item flex flex-col items-center">
-            <i class="fas fa-exchange-alt text-xl"></i>
-            <span class="text-[10px] font-bold mt-1">المستعارة</span>
+            <i class="fas fa-exchange-alt text-lg"></i>
+            <span class="text-[9px] font-bold mt-1">المستعارة</span>
         </div>
         <div onclick="openTab('renewal')" id="nav-renewal" class="nav-item flex flex-col items-center">
-            <i class="fas fa-calendar-alt text-xl"></i>
-            <span class="text-[10px] font-bold mt-1">التجديدات</span>
+            <i class="fas fa-calendar-alt text-lg"></i>
+            <span class="text-[9px] font-bold mt-1">التجديدات</span>
+        </div>
+        <div onclick="openTab('realestate')" id="nav-realestate" class="nav-item flex flex-col items-center">
+            <i class="fas fa-hand-holding-usd text-lg"></i>
+            <span class="text-[9px] font-bold mt-1">تمويل عقاري</span>
         </div>
     </nav>
 </div>
 
 <script>
-    // نفس البيانات الأصلية
     const loanedData = [
-    { company: "ريجوا", file: "اصل عقد بيع الابتدائي 179 فدان", loanDate: "2021-5-26", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
+        { company: "ريجوا", file: "اصل عقد بيع الابتدائي 179 فدان", loanDate: "2021-5-26", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
         { company: "ريجوا", file: "أصل توكيل 40 فدان", loanDate: "2023-12-23", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
         { company: "ريجوا", file: "اصل عقد 40 فدان", loanDate: "2023-12-23", borrower: "أ.حمادة ممدوح", phone: "201003430801" },
         { company: "مينس", file: "عقد swell lake", loanDate: "2025-9-22", borrower: "أ.احمد فكري", phone: "201029275571" },
@@ -123,7 +131,7 @@
     ];
 
     const renewalData = [
-    { company: "فولاذ لخدمات الامن والحراسه", type: "شهادة القيمه المضافة لشركه فولاذ لخدمات الامن والحراسه", expiryDate: "2025-10-19", manager: "أ- عبد الناصر", phone: "201019442424", notes: "تم تسليمه اصل الرخصه" },
+       { company: "فولاذ لخدمات الامن والحراسه", type: "شهادة القيمه المضافة لشركه فولاذ لخدمات الامن والحراسه", expiryDate: "2025-10-19", manager: "أ- عبد الناصر", phone: "201019442424", notes: "تم تسليمه اصل الرخصه" },
     { company: "Dorra V1", type: "شهادة شغل وظيفه - Dorra V1 Limited dated", expiryDate: "2026-12-04", manager: "أ.فاطيمة", phone: "201222221637", notes: "تم ارسال ميل 12-9-2025" },
     { company: "بناء مصر", type: "وثيقه تامين سياره ص أ 6659 متسوبيشي لانسر", expiryDate: "2026-12-13", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
     { company: "درة للإستثمار والتنمية العقارية", type: "تجديد وثيقة تأمين سيارات تكميلى خصوصى نيسان صني ن.ن 2293 رقم MOTP010229522A", expiryDate: "2026-12-14", manager: "أ. احمد علي", phone: "201060022218", notes: "" },
@@ -193,18 +201,167 @@
     { company: "درة للإستثمار والتنمية العقارية", type: "عقد انتفاع بالبنيه الاساسية وتقديم خدمات الاتصالات -فودافون مصر مشروع فيليدج", expiryDate: "2037-07-29", manager: "م.ايمن عبد العزيز", phone: "201003479998", notes: "" }        // ... يمكن إضافة باقي البيانات هنا بنفس التنسيق
     ];
 
+    const realEstateData = [
+        
+  { company: "ام ال اف للتمويل العقاري - B09 (001) الدور الارضى", type: "شيك ضمان بقيمه 18,204,468.00", expiryDate: "2025-12-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 10,321,786.00", expiryDate: "2025-12-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 36,395,116.00", expiryDate: "2025-12-27", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 71,889,582.00", expiryDate: "2026-01-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "وثيقة تامين الحريق والعنف", expiryDate: "2026-01-10", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد سكني", type: "شيك ضمان بقيمه 21,205,019.00", expiryDate: "2026-01-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "كايرو لتأجير التمويلي - B07-Floor -5", type: "وثيقه السطو والاكراه", expiryDate: "2026-02-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "كايرو لتأجير التمويلي - B07-Floor -5", type: "وثيقه حريق الشاملة", expiryDate: "2026-02-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "كايرو لتأجير التمويلي - B07-Floor -5", type: "عقد تأجير تمويلى بين كايرو للتأجير التمويلى والشركة العربيه للدور الخامس و 7", expiryDate: "2026-02-25", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "شيك ضمان بقيمه 30,070,083.00", expiryDate: "2026-03-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 44,520,644.00", expiryDate: "2026-03-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري R2 زايـد", type: "شيك ضمان بقيمه 10,822,544.00", expiryDate: "2026-03-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 14,244,115.00", expiryDate: "2026-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 4,390,533.00", expiryDate: "2026-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري الكويت بارك", type: "شيك ضمان بقيمه 5,987,724.00", expiryDate: "2026-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 37,631,114.00", expiryDate: "2026-05-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 41,515,667.00", expiryDate: "2026-05-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 4,737,800.00", expiryDate: "2026-05-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 5,475,805.00", expiryDate: "2026-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 103 -B05", type: "شيك ضمان بقيمه 5,831,343.00", expiryDate: "2026-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 9,578,148.00", expiryDate: "2026-06-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 4,525,447.00", expiryDate: "2026-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 45,802,894.00", expiryDate: "2026-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 33,339,073.00", expiryDate: "2026-07-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "عقد حوالة بكفالة فيليج ويست زايد عدد 3 وحدات ( توكيل رقم 1777 و 2025 )", expiryDate: "2026-08-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "شيك ضمان بقيمه 31,468,418.00", expiryDate: "2026-08-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 58,110,615.00", expiryDate: "2026-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "رويال للاستثمارات العقارية", type: "وثيقه تأمين الحريق والعنف - 1-9-2026- 11021021A-43011425A", expiryDate: "2026-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "وثيقه تأمين الحريق والعنف - 2-9-2026- 11021021A-43011424A", expiryDate: "2026-09-02", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "وثيقه تأمين الحريق والعنف - 2-9-2026- 1721021A-43011426A", expiryDate: "2026-09-02", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "الشركة العربية للتنمية والاسكان", type: "وثيقه تأمين الحريق والعنف - 2-9-2026- 1401124A-44010265A", expiryDate: "2026-09-02", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 11,211,687.00", expiryDate: "2026-09-10", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "المدرسة الامريكية الدوليه", type: "وثيقه تامين الحريق والعنف - المدرسه الامريكيه الدوليه 17-9-2026 1411124A-44010264A", expiryDate: "2026-09-17", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 14,204,154.00", expiryDate: "2026-09-30", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 24,281,481.00", expiryDate: "2026-11-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 16,281,481.00", expiryDate: "2026-11-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (001) الدور الارضى", type: "شيك ضمان بقيمه 18,204,468.00", expiryDate: "2026-12-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 8,818,790.00", expiryDate: "2026-12-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 4,401,120.00", expiryDate: "2026-12-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 35,229,116.00", expiryDate: "2026-12-27", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 4,740,511.00", expiryDate: "2026-12-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 22,281,481.00", expiryDate: "2027-01-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "شيك ضمان بقيمه 30,070,083.00", expiryDate: "2027-03-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 44,520,644.00", expiryDate: "2027-03-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري R2 زايـد", type: "شيك ضمان بقيمه 10,822,544.00", expiryDate: "2027-03-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "هيرميس للتمويل العقاري (001) - B07", type: "شيك ضمان بقيمه 61,231,811.00", expiryDate: "2027-03-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 14,244,115.00", expiryDate: "2027-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 4,390,533.00", expiryDate: "2027-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري الكويت بارك", type: "شيك ضمان بقيمه 5,987,724.00", expiryDate: "2027-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "عقد حوالة بكفالة فيليج ويست زايد 2 وحدات ( توكيل رقم 2026 )", expiryDate: "2027-04-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 10,279,836.00", expiryDate: "2027-04-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري الكويت بارك", type: "شيك ضمان بقيمه 4,383,728.00", expiryDate: "2027-04-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "هيرميس للتمويل العقاري (001) - B07", type: "عقد تأجير تمويلى رقم 1717 / 1419", expiryDate: "2027-04-28", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 37,631,114.00", expiryDate: "2027-05-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 41,515,667.00", expiryDate: "2027-05-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 5,475,805.00", expiryDate: "2027-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 103 -B05", type: "شيك ضمان بقيمه 5,831,343.00", expiryDate: "2027-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 9,578,148.00", expiryDate: "2027-06-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "عقد حوالة بكفالة فيليج ويست زايد 3 وحدات ( توكيل رقم 311 و 2026 )", expiryDate: "2027-07-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 4,525,447.00", expiryDate: "2027-07-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 45,802,894.00", expiryDate: "2027-07-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 33,339,073.00", expiryDate: "2027-07-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 4,738,200.00", expiryDate: "2027-07-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "شيك ضمان بقيمه 31,468,418.00", expiryDate: "2027-08-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 58,110,615.00", expiryDate: "2027-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 11,211,687.00", expiryDate: "2027-09-10", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 14,204,154.00", expiryDate: "2027-09-30", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 2,181,481.00", expiryDate: "2027-10-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "عقد حوالة بكفالة فيليج ويست زايد عدد 9 وحدات ( توكيل رقم 1698 و 2026 )", expiryDate: "2027-11-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 10,281,481.00", expiryDate: "2027-11-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 16,281,481.00", expiryDate: "2027-11-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (001) الدور الارضى", type: "شيك ضمان بقيمه 18,204,468.00", expiryDate: "2027-12-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "عقد حوالة بكفالة فيليج ويست زايد عدد 21 وحده ( توكيل رقم 2026 )", expiryDate: "2027-12-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 35,229,116.00", expiryDate: "2027-12-27", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 97 وحده", type: "شيك ضمان بقيمه 57,003,111.00", expiryDate: "2027-12-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 97 وحده", type: "شيك ضمان بقيمه 31,339,927.00", expiryDate: "2027-12-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 97 وحده", type: "عقد حوالة بكفالة فيليج ويست زايد عدد 7 وحدات ( توكيل رقم 392 و 2026 )", expiryDate: "2027-12-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 850,511.00", expiryDate: "2027-12-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 97 وحده", type: "شيك ضمان بقيمه 41,502,894.00", expiryDate: "2028-01-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 4,737,800.00", expiryDate: "2028-02-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري R2 زايـد", type: "شيك ضمان بقيمه 10,822,544.00", expiryDate: "2028-03-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري R2 زايـد", type: "بلوك 10 الوحدة (018-111-102) المدرسه الامريكيه توكيل رقم 108 ب / 21", expiryDate: "2028-03-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "كايرو لتأجير التمويلي - B07-Floor -5", type: "عقد تأجير تمويلى بين كايرو لتأجير التمويلى والشركة العربيه للدور الخامس 7", expiryDate: "2028-03-22", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "كايرو لتأجير التمويلي - B07-Floor -5", type: "شيك ضمان بقيمه 81,118,610.00", expiryDate: "2028-03-22", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "كايرو لتأجير التمويلي - B07-Floor -5", type: "سياسة ضمان تسويقى سيزر سوتى بقيمة 85000", expiryDate: "2028-03-22", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 9,578,148.00", expiryDate: "2028-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري الكويت بارك", type: "شيك ضمان بقيمه 5,987,724.00", expiryDate: "2028-03-31", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 38,731,114.00", expiryDate: "2028-05-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 41,515,667.00", expiryDate: "2028-05-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 5,475,805.00", expiryDate: "2028-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 103 -B05", type: "شيك ضمان بقيمه 5,831,343.00", expiryDate: "2028-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 4,738,200.00", expiryDate: "2028-06-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "شيك ضمان بقيمه 9,578,148.00", expiryDate: "2028-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "عقد حوالة كفالة فيليج ويست لعدد 31 وحده ( توكيل رقم 2445 و 2026 )", expiryDate: "2028-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 43 وحده", type: "عقد حوالة كفالة فيليج ويست لعدد 39 وحده ( توكيل رقم 2091 و 2026 )", expiryDate: "2028-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 65,802,894.00", expiryDate: "2028-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "شيك ضمان بقيمه 41,515,667.00", expiryDate: "2028-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 143 وحده", type: "عقد حوالة كفالة فيليج ويست لعدد 143 وحده ( توكيل رقم 3433 و 2026 )", expiryDate: "2028-07-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "شيك ضمان بقيمه 31,070,083.00", expiryDate: "2028-08-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "شيك ضمان بقيمه 23,275,313.00", expiryDate: "2028-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 5,595,115.00", expiryDate: "2028-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 24 فيلا", type: "عقد حوالة كفالة فيليج ويست عدد 24 فيلا ( توكيل رقم 4584 و 2026 )", expiryDate: "2028-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 41,515,667.00", expiryDate: "2028-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "شيك ضمان بقيمه 28,525,663.00", expiryDate: "2028-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - فيليج ويست زايد 38 فيلا", type: "عقد حوالة كفالة فيليج ويست عدد 38 فيلا ( توكيل رقم 4585 و 2026 )", expiryDate: "2028-09-01", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري - B07 الدور الارضى", type: "ملحق تعديل استبدال ( 001-B07 ) بقسم ( 2-B ) مساحة كذا في الدور الارضى B7", expiryDate: "2028-09-18", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 11,211,687.00", expiryDate: "2028-09-30", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 4,714,160.00", expiryDate: "2028-10-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "شيك ضمان بقيمه 3,118,660.00", expiryDate: "2028-10-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "شركه الاهلي للتمويل العقاري 10 وحدات الربوه", type: "عقد حوالة حق لعدد 10 وحدات الربوة ( توكيل رقم 2025 و 1251 )", expiryDate: "2028-10-15", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (001) الدور الارضى", type: "شيك ضمان بقيمه 18,204,468.00", expiryDate: "2028-12-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 35,395,116.00", expiryDate: "2028-12-25", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال - الشركه العربيه للتنميه والاسكان ( B7-Floor (1-4", type: "عقد بيع ابتدائى وعقد شراء الوحدات المؤجرة بخصوص عدد 5 وحدات (001 ) (توكيل رقم 2143 و 2145)", expiryDate: "2028-12-25", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال - الشركه العربيه للتنميه والاسكان ( B7-Floor (1-4", type: "عقد تأجير تمويلى بخصوص الدور الاول - الرابع -B07 - الوحدات (توكيل رقم 821 و 824 ) CRC", expiryDate: "2029-02-25", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 5,475,805.00", expiryDate: "2029-04-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 103 -B05", type: "شيك ضمان بقيمه 5,831,343.00", expiryDate: "2029-04-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "توكيل رقم 2024 / 138 بخصوص الوحده 101 الدور الاول مبنى 5 والواقع في الـ ف 1-4-2024", expiryDate: "2029-04-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 103 -B05", type: "توكيل رقم 2024 / 138 بخصوص الوحده 103 الدور الاول مبنى 5 والواقع في الـ ف 1-4-2024", expiryDate: "2029-04-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 101 -B05", type: "شيك ضمان بقيمه 5,475,805.00", expiryDate: "2029-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري 103 -B05", type: "شيك ضمان بقيمه 5,831,343.00", expiryDate: "2029-05-20", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "هيرميس للتمويل العقاري - المدرسه الامريكيه", type: "عقد تأجير تمويلى المدرسه الامريكيه رقم 1717", expiryDate: "2029-10-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (001) الدور الارضى", type: "شيك ضمان بقيمه 18,204,468.00", expiryDate: "2029-11-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (001) الدور الارضى", type: "عقد تأجير تمويلى بخصوص الدور الارضى 001 - B09 (توكيل رقم 528 و 2024 )", expiryDate: "2029-11-05", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "شيك ضمان بقيمه 35,395,116.00", expiryDate: "2029-11-27", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "ام ال اف للتمويل العقاري - B09 (002-003) الدور الارضى", type: "عقد تأجير تمويلى بخصوص الدور الارضى 002-003 - B09 (توكيل رقم 808 و 2024 )", expiryDate: "2029-11-27", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري R2 زايـد", type: "شيك ضمان بقيمه 10,822,544.00", expiryDate: "2030-02-28", manager: "أ. ماجد الشريف", phone: "201001777890" },
+  { company: "بى ال ال للتمويل العقاري R2 زايـد", type: "عقد الرقابة الاداريه بخصوص الدور الثالث R2 (توكيل رقم 1216 و 2025 )", expiryDate: "2030-02-28", manager: "أ. ماجد الشريف", phone: "201001777890" }
+
+    ];
+
     let currentTab = 'home';
 
     function getStatusInfo(dateStr) {
         if (!dateStr) return { label: 'غير محدد', class: 'bg-safe' };
-        const today = new Date();
-        today.setHours(0,0,0,0);
+        const today = new Date(); today.setHours(0,0,0,0);
         const expiry = new Date(dateStr);
         const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-
         if (diffDays < 0) return { label: 'منتهي', class: 'bg-expired' };
         if (diffDays <= 30) return { label: `ينتهي خلال ${diffDays} يوم`, class: 'bg-warning' };
         return { label: 'ساري', class: 'bg-safe' };
+    }
+
+    // دالة إنشاء رابط واتساب مخصص
+    function getWaLink(type, item) {
+        let msg = "";
+        if (type === 'loaned') {
+            msg = `يرجي من سياتكم إخطارنا عن أخر التطورات لإعادة الملف المستعار:
+الشركة: ${item.company}
+الملف: ${item.file}
+تاريخ الاستعارة: ${item.loanDate}
+مع تحيات إدارة حفظ الوثائق والمستندات`;
+        } else {
+            msg = `نحيط علم سيادتكم بأن الملف المذكور يرجي تجديده:
+الشركة: ${item.company}
+الملف: ${item.type}
+تاريخ الاستحقاق: ${item.expiryDate}
+مع تحيات إدارة حفظ الوثائق والمستندات`;
+        }
+        return `https://wa.me/${item.phone}?text=${encodeURIComponent(msg)}`;
     }
 
     function openTab(name) {
@@ -214,45 +371,43 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('nav-' + name).classList.add('active');
         window.scrollTo(0,0);
-        handleSearch(); // لإعادة الفلترة عند التنقل
+        handleSearch();
     }
 
     function handleSearch() {
         const query = document.getElementById('smart-search').value.toLowerCase();
         
-        if (currentTab === 'loaned' || currentTab === 'home') {
-            const filtered = loanedData.filter(item => 
-                item.company.toLowerCase().includes(query) || 
-                item.file.toLowerCase().includes(query) || 
-                item.borrower.toLowerCase().includes(query)
-            );
-            renderLoaned(filtered);
-        }
+        // 1. الاستعارة (الأحدث للأقدم)
+        const filteredLoaned = loanedData
+            .filter(i => i.company.toLowerCase().includes(query) || i.file.toLowerCase().includes(query) || i.borrower.toLowerCase().includes(query))
+            .sort((a, b) => new Date(b.loanDate) - new Date(a.loanDate));
+        renderLoaned(filteredLoaned);
 
-        if (currentTab === 'renewal' || currentTab === 'home') {
-            const filtered = renewalData.filter(item => 
-                item.company.toLowerCase().includes(query) || 
-                item.type.toLowerCase().includes(query) || 
-                item.manager.toLowerCase().includes(query)
-            );
-            renderRenewal(filtered);
-        }
+        // 2. التجديدات (الأقدم للأحدث)
+        const filteredRenewal = renewalData
+            .filter(i => i.company.toLowerCase().includes(query) || i.type.toLowerCase().includes(query))
+            .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+        renderRenewal(filteredRenewal);
+
+        // 3. التمويل العقاري (الأقدم للأحدث)
+        const filteredRealEstate = realEstateData
+            .filter(i => i.company.toLowerCase().includes(query) || i.type.toLowerCase().includes(query))
+            .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+        renderRealEstate(filteredRealEstate);
     }
 
     function renderLoaned(data) {
         const container = document.getElementById('body-loaned');
         container.innerHTML = data.map(item => `
-            <div class="app-card p-4 relative overflow-hidden">
+            <div class="app-card p-4">
                 <div class="flex justify-between items-start mb-2">
                     <span class="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded">${item.company}</span>
-                    <a href="https://wa.me/${item.phone}" class="text-emerald-500"><i class="fab fa-whatsapp text-xl"></i></a>
+                    <a href="${getWaLink('loaned', item)}" target="_blank" class="text-emerald-500"><i class="fab fa-whatsapp text-xl"></i></a>
                 </div>
                 <h4 class="font-bold text-slate-800 text-sm mb-3">${item.file}</h4>
                 <div class="flex justify-between items-center border-t pt-3 mt-3">
                     <div class="flex items-center">
-                        <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-xs ml-2">
-                            <i class="fas fa-user text-slate-400"></i>
-                        </div>
+                        <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-xs ml-2"><i class="fas fa-user text-slate-400"></i></div>
                         <span class="text-[11px] font-bold text-slate-600">${item.borrower}</span>
                     </div>
                     <span class="text-[10px] text-slate-400 font-bold"><i class="fas fa-calendar-alt ml-1"></i>${item.loanDate}</span>
@@ -275,9 +430,28 @@
                     <p class="text-[11px] text-slate-500 mb-3">${item.type}</p>
                     <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl">
                         <span class="text-[10px] font-bold text-slate-700"><i class="fas fa-user-tie ml-1 text-blue-500"></i>${item.manager}</span>
-                        <a href="https://wa.me/${item.phone}" class="w-7 h-7 bg-white shadow-sm rounded-full flex items-center justify-center text-emerald-500">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
+                        <a href="${getWaLink('renewal', item)}" target="_blank" class="w-7 h-7 bg-white shadow-sm rounded-full flex items-center justify-center text-emerald-500"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderRealEstate(data) {
+        const container = document.getElementById('body-realestate');
+        container.innerHTML = data.map(item => {
+            const status = getStatusInfo(item.expiryDate);
+            return `
+                <div class="app-card p-4 border-l-4 border-purple-500">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="status-badge ${status.class}">${status.label}</span>
+                        <span class="text-[10px] font-bold text-slate-400">${item.expiryDate}</span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-1">${item.company}</h4>
+                    <p class="text-[11px] text-slate-500 mb-3">${item.type}</p>
+                    <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl">
+                        <span class="text-[10px] font-bold text-slate-700"><i class="fas fa-user-shield ml-1 text-purple-500"></i>${item.manager}</span>
+                        <a href="${getWaLink('renewal', item)}" target="_blank" class="w-7 h-7 bg-white shadow-sm rounded-full flex items-center justify-center text-emerald-500"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
             `;
@@ -285,14 +459,13 @@
     }
 
     function initQuickAccess() {
-        // عرض أول 3 تجديدات قريبة في الصفحة الرئيسية
-        const quickData = [...renewalData].slice(0, 3);
+        const quickData = [...renewalData, ...realEstateData]
+            .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate))
+            .slice(0, 4);
         const container = document.getElementById('quick-access');
         container.innerHTML = quickData.map(item => `
             <div class="bg-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
-                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-bell animate-pulse"></i>
-                </div>
+                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-bell animate-pulse"></i></div>
                 <div class="overflow-hidden">
                     <h4 class="text-[11px] font-black text-slate-800 truncate">${item.type}</h4>
                     <p class="text-[9px] text-slate-500">${item.company} • ${item.expiryDate}</p>
@@ -305,9 +478,9 @@
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         document.getElementById('count-loaned').innerText = loanedData.length;
         document.getElementById('count-renewal').innerText = renewalData.length;
+        document.getElementById('count-realestate').innerText = realEstateData.length;
         
-        renderLoaned(loanedData);
-        renderRenewal(renewalData);
+        handleSearch();
         initQuickAccess();
 
         setTimeout(() => {
