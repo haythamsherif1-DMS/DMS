@@ -1,20 +1,20 @@
 {
-  "name": "DMS - Smart Document Management",
-  "short_name": "DMS",
+  "name": "DMS - Dorra Document Controller",
+  "short_name": "Dorra DMS",
   "description": "نظام إدارة الوثائق الذكي - Dorra Group",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "background_color": "#f1f5f9",
   "theme_color": "#1e40af",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://nour2030.neocities.org/DMS/Dorra.png",
+      "src": "icon 192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://nour2030.neocities.org/DMS/Dorra.png",
+      "src": "icon 512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
