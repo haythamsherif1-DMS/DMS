@@ -1,5 +1,5 @@
 // عند التعديل مستقبلاً، غير رقم الإصدار هنا (مثلاً من v1.0.0 إلى v1.0.1)
-const CACHE_NAME = 'dms-cache-v1.4.0'; 
+const CACHE_NAME = 'dms-cache-v1.5.0'; 
 
 const assets = [
   './',
